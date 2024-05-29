@@ -4,19 +4,25 @@ import './App.css';
 function App() {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
 
-  const [image, setImage] = useState<HTMLImageElement | null>(null);
+  const [image, setImage] = useState<string | null>(null);
 
-  const handleSubmit = () => {
-    console.log('form submitted');
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'http://localhost:8000/upload-file/');
+  const handleSubmit = async () => {
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement | null;
 
-    let formData = new FormData();
-    const input = document.querySelector('input[type="file"]');
-    formData.append('image', (input as HTMLInputElement).files![0]);
+    if (input && input.files && input.files.length > 0) {
+      let formData = new FormData();
+      formData.append('image', input.files[0]);
 
-    xhr.send(formData);
-  };
+      const response = await fetch('http://localhost:8000/upload-file/', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      setImage(data.image);
+    }
+  }; 
 
   const handleClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
@@ -30,9 +36,6 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>Hello, React!</h1>
-      </header>
       <div>
         <form onSubmit={(event) => {event.preventDefault(); handleSubmit();}}>
           <input type="file" accept="image/*" />
@@ -41,6 +44,7 @@ function App() {
       </div>
       <div>
         <canvas ref={canvasRef} width="300" height="300" onClick={handleClick} style={{ border: '1px solid black' }}></canvas>
+        {image && <img src={image} alt="Uploaded"/>}
       </div>
     </div>
   );
