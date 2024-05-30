@@ -21,6 +21,14 @@ function App() {
       const data = await response.json();
 
       setImage(data.image);
+
+      const canvas = canvasRef.current;
+      let context = canvas?.getContext('2d');
+
+      const imageElement = new Image();
+      imageElement.src = data.image;
+
+      context?.drawImage(imageElement, 0, 0, 350, 350);
     }
   }; 
 
@@ -43,8 +51,7 @@ function App() {
         </form>
       </div>
       <div>
-        <canvas ref={canvasRef} width="300" height="300" onClick={handleClick} style={{ border: '1px solid black' }}></canvas>
-        {image && <img src={image} alt="Uploaded"/>}
+        {image && <canvas ref={canvasRef} width="350" height="350" onClick={handleClick} style={{ border: '1px solid black' }}>Stuff</canvas>}
       </div>
     </div>
   );

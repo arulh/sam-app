@@ -21,13 +21,10 @@ def read_root():
 
 @app.post("/upload-file/")
 async def create_upload_file(image: UploadFile = File(...)):
-    # with open(file.filename, "wb") as buffer:
-    #     buffer.write(file.file.read())
     image = Image.open(io.BytesIO(await image.read())).convert("RGB")
     buffered = io.BytesIO()
     image.save(buffered, format="JPEG")
     img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
-    print(f"{image.size=}")
 
     return {"image": f"data:image/jpeg;base64,{img_str}"}
 
